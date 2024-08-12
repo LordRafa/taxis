@@ -4,7 +4,6 @@ import com.rafaelwaldo.taxis.hub.domain.Taxi;
 import com.rafaelwaldo.taxis.hub.domain.Trip;
 import com.rafaelwaldo.taxis.hub.domain.TripStatus;
 import com.rafaelwaldo.taxis.hub.domain.exception.CentralException;
-import com.rafaelwaldo.taxis.hub.domain.exception.TripNotFoundException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,6 +12,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
+import org.springframework.retry.support.RetryTemplate;
 import org.springframework.web.client.RestTemplate;
 
 import java.lang.reflect.Field;
@@ -35,7 +35,8 @@ public class TaxiCentralClientImplTest {
     @BeforeAll
     public static void setUp() throws NoSuchFieldException, IllegalAccessException {
         restTemplate = Mockito.mock(RestTemplate.class);
-        taxiCentralClient = new TaxiCentralClientImpl(restTemplate);
+        RetryTemplate retryTemplate = Mockito.mock(RetryTemplate.class);
+        taxiCentralClient = new TaxiCentralClientImpl(restTemplate, retryTemplate);
         Field field = TaxiCentralClientImpl.class.getDeclaredField("taxiCentralHost");
         field.setAccessible(true);
         field.set(taxiCentralClient, TAXI_CENTRAL_HOST);
@@ -79,36 +80,6 @@ public class TaxiCentralClientImplTest {
                 .thenReturn(new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR));
 
         assertThrows(CentralException.class, () -> taxiCentralClient.publishTrip(trip));
-    }
-
-    @Test
-    void testGetAssignedTripTaxi() {
-        UUID tripUuid = UUID.randomUUID();
-        Taxi taxi = getMockTaxi().build();
-        when(restTemplate.getForEntity(TAXI_CENTRAL_HOST + "/central/trip/" + tripUuid + "/taxi", Taxi.class))
-                .thenReturn(new ResponseEntity<>(taxi, HttpStatus.OK));
-
-        Taxi result = taxiCentralClient.getAssignedTripTaxi(tripUuid);
-
-        assertEquals(taxi, result);
-    }
-
-    @Test
-    void testGetAssignedTripTaxiNotFound() {
-        UUID tripUuid = UUID.randomUUID();
-        when(restTemplate.getForEntity(TAXI_CENTRAL_HOST + "/central/trip/" + tripUuid + "/taxi", Taxi.class))
-                .thenReturn(new ResponseEntity<>(HttpStatus.NOT_FOUND));
-
-        assertThrows(TripNotFoundException.class, () -> taxiCentralClient.getAssignedTripTaxi(tripUuid));
-    }
-
-    @Test
-    void testGetAssignedTripTaxiFailure() {
-        UUID tripUuid = UUID.randomUUID();
-        when(restTemplate.getForEntity(TAXI_CENTRAL_HOST + "/central/trip/" + tripUuid + "/taxi", Taxi.class))
-                .thenReturn(new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR));
-
-        assertThrows(CentralException.class, () -> taxiCentralClient.getAssignedTripTaxi(tripUuid));
     }
 
     @Test

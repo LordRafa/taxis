@@ -70,6 +70,11 @@ public class CarServiceImpl implements CarService {
                 return;
             }
 
+            if (taxiPojo.getTaxiStatus() != TaxiStatus.AVAILABLE) {
+                log.info("Taxi not available");
+                return;
+            }
+
             TaxiCommand taxiCommand = objectMapper.readValue(message, TaxiCommand.class);
 
             if (Objects.requireNonNull(taxiCommand.taxiCommandName()) == TaxiCommandName.PUBLISH_TRIP) {

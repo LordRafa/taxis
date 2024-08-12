@@ -96,6 +96,7 @@ class CarServiceImplTest {
         TaxiCommand taxiCommand = new TaxiCommand(TaxiCommandName.PUBLISH_TRIP, objectMapper.writeValueAsString(trip));
 
         when(taxiPojo.getUuid()).thenReturn(taxi.uuid());
+        when(taxiPojo.getTaxiStatus()).thenReturn(TaxiStatus.AVAILABLE);
         when(taxiMapper.toDomain(taxiPojo)).thenReturn(taxi);
 
         carService.receiveTaxiCommand(objectMapper.writeValueAsString(taxiCommand));
@@ -125,12 +126,46 @@ class CarServiceImplTest {
         TaxiCommand taxiCommand = new TaxiCommand(TaxiCommandName.PUBLISH_TRIP, objectMapper.writeValueAsString(trip));
 
         when(taxiPojo.getUuid()).thenReturn(taxi.uuid());
+        when(taxiPojo.getTaxiStatus()).thenReturn(TaxiStatus.AVAILABLE);
         when(taxiMapper.toDomain(taxiPojo)).thenReturn(taxi);
         doThrow(new CentralException("Test Exception")).when(taxiCentralClient).updateTripTaxi(any(), any());
 
         carService.receiveTaxiCommand(objectMapper.writeValueAsString(taxiCommand));
 
         verify(taxiCentralClient).updateTripTaxi(any(), any());
+        verify(taxiPojo, never()).setCurrentTrip(any());
+        verify(taxiPojo, never()).setTaxiStatus(any());
+    }
+
+    @Test
+    void receiveTaxiCommand_taxiNotReady() throws JsonProcessingException {
+
+        Taxi taxi = getMockTaxi().build();
+        Trip trip = getMockTrip().taxi(taxi).build();
+        TaxiCommand taxiCommand = new TaxiCommand(TaxiCommandName.PUBLISH_TRIP, objectMapper.writeValueAsString(trip));
+
+        when(taxiPojo.getUuid()).thenReturn(null);
+
+        carService.receiveTaxiCommand(objectMapper.writeValueAsString(taxiCommand));
+
+        verify(taxiCentralClient, never()).updateTripTaxi(any(), any());
+        verify(taxiPojo, never()).setCurrentTrip(any());
+        verify(taxiPojo, never()).setTaxiStatus(any());
+    }
+
+    @Test
+    void receiveTaxiCommand_taxiBooked() throws JsonProcessingException {
+
+        Taxi taxi = getMockTaxi().build();
+        Trip trip = getMockTrip().taxi(taxi).build();
+        TaxiCommand taxiCommand = new TaxiCommand(TaxiCommandName.PUBLISH_TRIP, objectMapper.writeValueAsString(trip));
+
+        when(taxiPojo.getUuid()).thenReturn(taxi.uuid());
+        when(taxiPojo.getTaxiStatus()).thenReturn(TaxiStatus.BOOKED);
+
+        carService.receiveTaxiCommand(objectMapper.writeValueAsString(taxiCommand));
+
+        verify(taxiCentralClient, never()).updateTripTaxi(any(), any());
         verify(taxiPojo, never()).setCurrentTrip(any());
         verify(taxiPojo, never()).setTaxiStatus(any());
     }

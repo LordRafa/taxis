@@ -10,8 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
-import org.springframework.retry.annotation.Backoff;
-import org.springframework.retry.annotation.Retryable;
+import org.springframework.retry.support.RetryTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -28,6 +27,7 @@ import static com.rafaelwaldo.taxis.hub.util.HubConstants.FAILED_TO_COMMUNICATE_
 public class TaxiCentralClientImpl implements TaxiCentralClient {
 
     private final RestTemplate restTemplate;
+    private final RetryTemplate retryTemplate;
     @Value("${taxi.central.host}")
     private String taxiCentralHost;
 
@@ -54,17 +54,19 @@ public class TaxiCentralClientImpl implements TaxiCentralClient {
     }
 
     @Override
-    @Retryable(retryFor = TripNotFoundException.class, backoff = @Backoff(delay = 1000))
     public Taxi getAssignedTripTaxi(UUID tripUuid) {
-        ResponseEntity<Taxi> response = restTemplate.getForEntity(taxiCentralHost + "/central/trip/" + tripUuid + "/taxi", Taxi.class);
 
-        if (response.getStatusCode().is2xxSuccessful()) {
-            return response.getBody();
-        } else if (response.getStatusCode().is4xxClientError()) {
-            throw new TripNotFoundException("Trip not found");
-        } else {
-            throw new CentralException(FAILED_TO_COMMUNICATE_WITH_CENTRAL_HTTP_ERROR_CODE + response.getStatusCode());
-        }
+        return retryTemplate.execute(context -> {
+            ResponseEntity<Taxi> response = restTemplate.getForEntity(taxiCentralHost + "/central/trip/" + tripUuid + "/taxi", Taxi.class);
+            if (response.getStatusCode().is2xxSuccessful()) {
+                return response.getBody();
+            } else if (response.getStatusCode().is4xxClientError()) {
+                throw new TripNotFoundException("Trip not found");
+            } else {
+                throw new CentralException(FAILED_TO_COMMUNICATE_WITH_CENTRAL_HTTP_ERROR_CODE + response.getStatusCode());
+            }
+        });
+
     }
 
     @Override

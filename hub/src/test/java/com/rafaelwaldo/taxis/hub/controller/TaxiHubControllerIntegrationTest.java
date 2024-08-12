@@ -119,7 +119,6 @@ class TaxiHubControllerIntegrationTest {
     void testRequestTaxiCentralError() throws Exception {
         RequestTaxiDTO requestTaxiDTO = getMockRequestTaxiDTO().build();
         Trip trip = getMockTrip().uuid(null).build();
-        Taxi taxi = getMockTaxi().build();
         Trip tripWithUUid = getMockTrip().build();
 
         Mockito.reset(restTemplate);
@@ -128,8 +127,7 @@ class TaxiHubControllerIntegrationTest {
                 .thenReturn(new ResponseEntity<>(tripWithUUid, HttpStatus.OK));
 
         when(restTemplate.getForEntity("http://localhost:8080/central/trip/" + tripWithUUid.uuid() + "/taxi", Taxi.class))
-                .thenReturn(new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR))
-                .thenReturn(new ResponseEntity<>(taxi, HttpStatus.OK));
+                .thenReturn(new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR));
 
         mockMvc.perform(post("/hub/taxi/request")
                         .contentType(MediaType.APPLICATION_JSON)

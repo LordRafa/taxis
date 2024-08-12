@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <title>Car Service</title>
     <style>
         #taxiInfo {
@@ -11,30 +11,30 @@
     </style>
 </head>
 <body>
-    <h1>Car Service</h1>
+<h1>Car Service</h1>
 
-    <section id="getTaxiInfoSection">
-        <h2>Get Taxi Info</h2>
-        <button id="getTaxiInfoButton">Get Taxi Info</button>
-    </section>
+<section id="getTaxiInfoSection">
+    <h2>Get Taxi Info</h2>
+    <button id="getTaxiInfoButton">Get Taxi Info</button>
+</section>
 
-    <section id="completeTripSection">
-        <h2>Complete Trip</h2>
-        <button id="completeTripButton">Complete Trip</button>
-    </section>
+<section id="completeTripSection">
+    <h2>Complete Trip</h2>
+    <button id="completeTripButton">Complete Trip</button>
+</section>
 
-    <div id="taxiInfo"></div>
+<div id="taxiInfo"></div>
 
-    <script>
-        document.getElementById('getTaxiInfoButton').addEventListener('click', getTaxiInfo);
-        document.getElementById('completeTripButton').addEventListener('click', completeTrip);
+<script>
+    document.getElementById('getTaxiInfoButton').addEventListener('click', getTaxiInfo);
+    document.getElementById('completeTripButton').addEventListener('click', completeTrip);
 
-        function getTaxiInfo() {
-            fetch('/taxi')
-                .then(response => response.json())
-                .then(data => {
-                    const taxiInfo = document.getElementById('taxiInfo');
-                    taxiInfo.innerHTML = `
+    function getTaxiInfo() {
+        fetch('/taxi')
+            .then(response => response.json())
+            .then(data => {
+                const taxiInfo = document.getElementById('taxiInfo');
+                taxiInfo.innerHTML = `
                         <h2>Taxi Info</h2>
                         <p>UUID: ${data.uuid}</p>
                         <p>Plate: ${data.plate}</p>
@@ -43,14 +43,14 @@
                         <p>Current Trip: ${data.currentTripUuid}</p>
 
                     `;
-                })
-                .catch(error => console.error('Error:', error));
-        }
-
-        function completeTrip() {
-            fetch('/taxi/trip/complete', {
-                method: 'PUT'
             })
+            .catch(error => console.error('Error:', error));
+    }
+
+    function completeTrip() {
+        fetch('/taxi/trip/complete', {
+            method: 'PUT'
+        })
             .then(response => response.json())
             .then(data => {
                 const taxiInfo = document.getElementById('taxiInfo');
@@ -64,7 +64,7 @@
                 `;
             })
             .catch(error => console.error('Error:', error));
-        }
-    </script>
+    }
+</script>
 </body>
 </html>
