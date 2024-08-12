@@ -3,6 +3,7 @@ package com.rafaelwaldo.taxis.hub.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rafaelwaldo.taxis.hub.domain.Taxi;
 import com.rafaelwaldo.taxis.hub.domain.Trip;
+import com.rafaelwaldo.taxis.hub.domain.TripStatus;
 import com.rafaelwaldo.taxis.hub.domain.dto.RequestTaxiDTO;
 import com.rafaelwaldo.taxis.hub.domain.dto.TaxiDTO;
 import com.rafaelwaldo.taxis.hub.mapper.TaxiMapper;
@@ -14,6 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.client.RestTemplate;
@@ -99,6 +101,12 @@ class TaxiHubControllerIntegrationTest {
 
         when(restTemplate.getForEntity("http://localhost:8080/central/trip/" + tripWithUUid.uuid() + "/taxi", Taxi.class))
                 .thenReturn(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+
+        RequestEntity<TripStatus> requestEntity = RequestEntity
+                .put("http://localhost:8080/central/trip/" + tripWithUUid.uuid() + "/tripStatus")
+                .body(TripStatus.CANCELED);
+        when(restTemplate.exchange(requestEntity, Trip.class))
+                .thenReturn(new ResponseEntity<>(HttpStatus.OK));
 
         mockMvc.perform(post("/hub/taxi/request")
                         .contentType(MediaType.APPLICATION_JSON)

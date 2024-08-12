@@ -12,4 +12,6 @@ public interface TaxiCentralClient {
     Trip publishTrip(Trip trip);
 
     Taxi getAssignedTripTaxi(UUID tripUuid);
+
+    void cancelTrip(UUID tripUuid);
 }

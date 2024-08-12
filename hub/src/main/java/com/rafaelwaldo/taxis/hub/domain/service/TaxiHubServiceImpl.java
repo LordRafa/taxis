@@ -22,6 +22,11 @@ public class TaxiHubServiceImpl implements TaxiHubService {
     @Override
     public Taxi requestTaxi(Trip trip) {
         trip = taxiCentralClient.publishTrip(trip);
-        return taxiCentralClient.getAssignedTripTaxi(trip.uuid());
+        try {
+            return taxiCentralClient.getAssignedTripTaxi(trip.uuid());
+        } catch (Exception e) {
+            taxiCentralClient.cancelTrip(trip.uuid());
+            throw e;
+        }
     }
 }

@@ -2,6 +2,7 @@ package com.rafaelwaldo.taxis.hub.infrastructure;
 
 import com.rafaelwaldo.taxis.hub.domain.Taxi;
 import com.rafaelwaldo.taxis.hub.domain.Trip;
+import com.rafaelwaldo.taxis.hub.domain.TripStatus;
 import com.rafaelwaldo.taxis.hub.domain.exception.CentralException;
 import com.rafaelwaldo.taxis.hub.domain.exception.TripNotFoundException;
 import org.junit.jupiter.api.BeforeAll;
@@ -10,6 +11,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
@@ -107,5 +109,20 @@ public class TaxiCentralClientImplTest {
                 .thenReturn(new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR));
 
         assertThrows(CentralException.class, () -> taxiCentralClient.getAssignedTripTaxi(tripUuid));
+    }
+
+    @Test
+    void testCancelTrip() {
+        UUID tripUuid = UUID.randomUUID();
+        RequestEntity<TripStatus> requestEntity = RequestEntity
+                .put(TAXI_CENTRAL_HOST + "/central/trip/" + tripUuid + "/tripStatus")
+                .body(TripStatus.CANCELED);
+        when(restTemplate.exchange(requestEntity, Trip.class))
+                .thenReturn(new ResponseEntity<>(HttpStatus.OK));
+
+        taxiCentralClient.cancelTrip(tripUuid);
+
+        Mockito.verify(restTemplate).exchange(requestEntity, Trip.class);
+
     }
 }
