@@ -13,6 +13,7 @@
     <modules>
         <module>hub</module>
         <module>central</module>
+        <module>car</module>
     </modules>
 
     <groupId>com.rafaelwaldo</groupId>
