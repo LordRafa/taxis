@@ -17,48 +17,48 @@ services:
       - "5672:5672"
       - "15672:15672"
 
-#  central:
-#    build:
-#      context: ./central
-#    depends_on:
-#      - mariadb
-#      - rabbitmq
-#    environment:
-#      RABBITMQ_HOST: rabbitmq
-#      RABBITMQ_PORT: 5672
-#      RABBITMQ_USERNAME: guest
-#      RABBITMQ_PASSWORD: guest
-#      DB_URL: jdbc:mariadb://mariadb:3306/taxis
-#      DB_USERNAME: taxis
-#      DB_PASSWORD: taxipassword
-#    ports:
-#      - "42024:8080"
-#
-#  hub:
-#    build:
-#      context: ./hub
-#    depends_on:
-#      - central
-#    environment:
-#      TAXI_CENTRAL_HOST: http://central:8080
-#    ports:
-#      - "42025:8080"
-#
-#  car:
-#    build:
-#      context: ./car
-#    depends_on:
-#      - rabbitmq
-#      - central
-#    environment:
-#      RABBITMQ_HOST: rabbitmq
-#      RABBITMQ_PORT: 5672
-#      RABBITMQ_USERNAME: guest
-#      RABBITMQ_PASSWORD: guest
-#      TAXI_CENTRAL_HOST: http://central:8080
-#      TAXI_PLATE: 1234ABC
-#    ports:
-#      - "42026:8080"
+  central:
+    build:
+      context: ./central
+    depends_on:
+      - mariadb
+      - rabbitmq
+    environment:
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USERNAME: guest
+      RABBITMQ_PASSWORD: guest
+      DB_URL: jdbc:mariadb://mariadb:3306/taxis
+      DB_USERNAME: taxis
+      DB_PASSWORD: taxipassword
+    ports:
+      - "42024:8080"
+
+  hub:
+    build:
+      context: ./hub
+    depends_on:
+      - central
+    environment:
+      TAXI_CENTRAL_HOST: http://central:8080
+    ports:
+      - "42025:8080"
+
+  car:
+    build:
+      context: ./car
+    depends_on:
+      - rabbitmq
+      - central
+    environment:
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USERNAME: guest
+      RABBITMQ_PASSWORD: guest
+      TAXI_CENTRAL_HOST: http://central:8080
+      TAXI_PLATE: 1234ABC
+    ports:
+      - "42026:8080"
 
 version: '3.8'
 
