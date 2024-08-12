@@ -18,7 +18,7 @@ import java.util.List;
 
 @Slf4j
 @RestController
-@RequestMapping("/central/taxis")
+@RequestMapping("/central/taxi")
 @RequiredArgsConstructor
 public class TaxiController {
 

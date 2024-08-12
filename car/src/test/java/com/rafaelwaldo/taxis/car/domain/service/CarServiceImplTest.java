@@ -31,21 +31,17 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class CarServiceImplTest {
 
+    private final ObjectMapper objectMapper = new ObjectMapper();
     @Mock
     private TaxiPojo taxiPojo;
-
     @Mock
     private ServiceLocation serviceLocation;
-
     @Mock
     private TaxiCentralClient taxiCentralClient;
-
     @Mock
     private TaxiMapper taxiMapper;
-
     @InjectMocks
     private CarServiceImpl carService;
-    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Test
     void completeCarTrip() {

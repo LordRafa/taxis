@@ -7,6 +7,7 @@ import com.rafaelwaldo.taxis.car.domain.Trip;
 import com.rafaelwaldo.taxis.car.domain.TripStatus;
 import com.rafaelwaldo.taxis.car.domain.pojo.TaxiPojo;
 import com.rafaelwaldo.taxis.car.mapper.TaxiMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -18,8 +19,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.client.RestTemplate;
 
+import static com.rafaelwaldo.taxis.car.utils.MockHelper.getMockTaxi;
 import static com.rafaelwaldo.taxis.car.utils.MockHelper.getMockTrip;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -29,19 +33,21 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 class TaxiControllerIntegrationTest {
 
+    private final ObjectMapper objectMapper = new ObjectMapper();
+    @Autowired
+    TaxiMapper taxiMapper;
     @Autowired
     private MockMvc mockMvc;
-
     @MockBean
     private RestTemplate restTemplate;
-
     @Autowired
     private TaxiPojo taxiPojo;
 
-    @Autowired
-    TaxiMapper taxiMapper;
-
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    @BeforeEach
+    void setUp() {
+        when(restTemplate.postForEntity(eq("http://localhost:8080/central/taxi"), any(), any()))
+                .thenReturn(new ResponseEntity<>(getMockTaxi().build(), HttpStatus.OK));
+    }
 
     @Test
     void testCompleteCarTrip() throws Exception {

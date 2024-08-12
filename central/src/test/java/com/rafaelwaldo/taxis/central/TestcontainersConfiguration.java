@@ -5,6 +5,7 @@ import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.Declarables;
 import org.springframework.amqp.core.FanoutExchange;
 import org.springframework.amqp.core.Queue;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.context.annotation.Bean;
@@ -12,12 +13,11 @@ import org.testcontainers.containers.MariaDBContainer;
 import org.testcontainers.containers.RabbitMQContainer;
 import org.testcontainers.utility.DockerImageName;
 
-import static com.rafaelwaldo.taxis.central.utils.TestConstants.TAXI_COMMAND_EXCHANGE;
-import static com.rafaelwaldo.taxis.central.utils.TestConstants.TAXI_COMMAND_FANOUT_QUEUE;
-
 @TestConfiguration(proxyBeanMethods = false)
 @RequiredArgsConstructor
 public class TestcontainersConfiguration {
+
+    public static final String TAXI_COMMAND_FANOUT_QUEUE = "taxiCommandFanout.queue";
 
     @Bean
     @ServiceConnection
@@ -26,15 +26,14 @@ public class TestcontainersConfiguration {
     }
 
     @Bean
-    public Declarables fanoutBindings() {
+    public Declarables fanoutBindings(@Autowired FanoutExchange commandExchange) {
 
-        FanoutExchange cmdExchange = new FanoutExchange(TAXI_COMMAND_EXCHANGE);
-        Queue fanoutQueue1 = new Queue(TAXI_COMMAND_FANOUT_QUEUE, false);
+        Queue fanoutQueue = new Queue(TAXI_COMMAND_FANOUT_QUEUE, false);
 
         return new Declarables(
-                fanoutQueue1,
-                cmdExchange,
-                BindingBuilder.bind(fanoutQueue1).to(cmdExchange));
+                fanoutQueue,
+                commandExchange,
+                BindingBuilder.bind(fanoutQueue).to(commandExchange));
     }
 
     @Bean

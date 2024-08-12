@@ -24,15 +24,11 @@ import java.util.Objects;
 @Service
 public class CarServiceImpl implements CarService {
 
-    private final TaxiPojo taxiPojo;
-
-    private final ServiceLocation serviceLocation;
-
-    private final TaxiCentralClient taxiCentralClient;
-
-    private final TaxiMapper taxiMapper;
-
     private static final ObjectMapper objectMapper = new ObjectMapper();
+    private final TaxiPojo taxiPojo;
+    private final ServiceLocation serviceLocation;
+    private final TaxiCentralClient taxiCentralClient;
+    private final TaxiMapper taxiMapper;
 
     @Override
     public Taxi completeCarTrip() {

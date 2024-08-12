@@ -43,7 +43,7 @@ public class TaxiCentralClientImplTest {
     @Test
     void testListTaxis() {
         Taxi taxi = getMockTaxi().build();
-        when(restTemplate.getForEntity(TAXI_CENTRAL_HOST + "/taxi", Taxi[].class)).thenReturn(new ResponseEntity<>(new Taxi[]{taxi}, HttpStatus.OK));
+        when(restTemplate.getForEntity(TAXI_CENTRAL_HOST + "/central/taxi", Taxi[].class)).thenReturn(new ResponseEntity<>(new Taxi[]{taxi}, HttpStatus.OK));
 
         List<Taxi> taxis = taxiCentralClient.listTaxis();
 
@@ -53,7 +53,7 @@ public class TaxiCentralClientImplTest {
 
     @Test
     void testListTaxisFailure() {
-        when(restTemplate.getForEntity(TAXI_CENTRAL_HOST + "/taxi", Taxi[].class))
+        when(restTemplate.getForEntity(TAXI_CENTRAL_HOST + "/central/taxi", Taxi[].class))
                 .thenReturn(new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR));
 
         assertThrows(CentralException.class, () -> taxiCentralClient.listTaxis());
@@ -62,7 +62,7 @@ public class TaxiCentralClientImplTest {
     @Test
     void testPublishTrip() {
         Trip trip = getMockTrip().build();
-        when(restTemplate.postForEntity(TAXI_CENTRAL_HOST + "/trip", trip, Trip.class))
+        when(restTemplate.postForEntity(TAXI_CENTRAL_HOST + "/central/trip", trip, Trip.class))
                 .thenReturn(new ResponseEntity<>(trip, HttpStatus.OK));
 
         Trip result = taxiCentralClient.publishTrip(trip);
@@ -73,7 +73,7 @@ public class TaxiCentralClientImplTest {
     @Test
     void testPublishTripFailure() {
         Trip trip = getMockTrip().build();
-        when(restTemplate.postForEntity(TAXI_CENTRAL_HOST + "/trip", trip, Trip.class))
+        when(restTemplate.postForEntity(TAXI_CENTRAL_HOST + "/central/trip", trip, Trip.class))
                 .thenReturn(new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR));
 
         assertThrows(CentralException.class, () -> taxiCentralClient.publishTrip(trip));
@@ -83,7 +83,7 @@ public class TaxiCentralClientImplTest {
     void testGetAssignedTripTaxi() {
         UUID tripUuid = UUID.randomUUID();
         Taxi taxi = getMockTaxi().build();
-        when(restTemplate.getForEntity(TAXI_CENTRAL_HOST + "/trip/" + tripUuid + "/taxi", Taxi.class))
+        when(restTemplate.getForEntity(TAXI_CENTRAL_HOST + "/central/trip/" + tripUuid + "/taxi", Taxi.class))
                 .thenReturn(new ResponseEntity<>(taxi, HttpStatus.OK));
 
         Taxi result = taxiCentralClient.getAssignedTripTaxi(tripUuid);
@@ -94,7 +94,7 @@ public class TaxiCentralClientImplTest {
     @Test
     void testGetAssignedTripTaxiNotFound() {
         UUID tripUuid = UUID.randomUUID();
-        when(restTemplate.getForEntity(TAXI_CENTRAL_HOST + "/trip/" + tripUuid + "/taxi", Taxi.class))
+        when(restTemplate.getForEntity(TAXI_CENTRAL_HOST + "/central/trip/" + tripUuid + "/taxi", Taxi.class))
                 .thenReturn(new ResponseEntity<>(HttpStatus.NOT_FOUND));
 
         assertThrows(TripNotFoundException.class, () -> taxiCentralClient.getAssignedTripTaxi(tripUuid));
@@ -103,7 +103,7 @@ public class TaxiCentralClientImplTest {
     @Test
     void testGetAssignedTripTaxiFailure() {
         UUID tripUuid = UUID.randomUUID();
-        when(restTemplate.getForEntity(TAXI_CENTRAL_HOST + "/trip/" + tripUuid + "/taxi", Taxi.class))
+        when(restTemplate.getForEntity(TAXI_CENTRAL_HOST + "/central/trip/" + tripUuid + "/taxi", Taxi.class))
                 .thenReturn(new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR));
 
         assertThrows(CentralException.class, () -> taxiCentralClient.getAssignedTripTaxi(tripUuid));

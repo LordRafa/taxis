@@ -9,6 +9,7 @@ import com.rafaelwaldo.taxis.car.domain.TaxiCommandName;
 import com.rafaelwaldo.taxis.car.domain.TaxiStatus;
 import com.rafaelwaldo.taxis.car.domain.Trip;
 import com.rafaelwaldo.taxis.car.domain.pojo.TaxiPojo;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,25 +26,29 @@ import static com.rafaelwaldo.taxis.car.utils.MockHelper.getMockTrip;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 @Import(TestcontainersConfiguration.class)
 @SpringBootTest
 class CarServiceImplIntegrationTest {
 
+    private static final ObjectMapper objectMapper = new ObjectMapper();
     @MockBean
     private RestTemplate restTemplate;
-
     @Autowired
     private RabbitTemplate rabbitTemplate;
-
     @Autowired
     private TaxiPojo taxiPojo;
-
     @Autowired
     private TaxiConfig taxiConfig;
 
-    private static final ObjectMapper objectMapper = new ObjectMapper();
+    @BeforeEach
+    void setUp() {
+        when(restTemplate.postForEntity(eq("http://localhost:8080/central/taxi"), any(), any()))
+                .thenReturn(new ResponseEntity<>(getMockTaxi().build(), HttpStatus.OK));
+    }
 
     @Test
     void receiveTaxiCommand() throws Exception {

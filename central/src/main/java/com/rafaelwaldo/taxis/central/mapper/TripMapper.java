@@ -14,6 +14,5 @@ public interface TripMapper {
 
     @Mapping(target = "location.latitude", source = "latitude")
     @Mapping(target = "location.longitude", source = "longitude")
-
     Trip toDomain(TripEntity tripEntity);
 }

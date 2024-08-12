@@ -45,7 +45,7 @@ class TaxiControllerIntegrationTest {
         Taxi taxi = MockHelper.getMockTaxi().uuid(taxiEntity.getUuid()).build();
         String expected = objectMapper.writeValueAsString(new Taxi[]{taxi});
 
-        mockMvc.perform(get("/central/taxis"))
+        mockMvc.perform(get("/central/taxi"))
                 .andExpect(status().isOk())
                 .andExpect(content().json(expected));
     }
@@ -55,7 +55,7 @@ class TaxiControllerIntegrationTest {
         Taxi taxi = MockHelper.getMockTaxi().build();
         String taxiJson = objectMapper.writeValueAsString(taxi);
 
-        mockMvc.perform(post("/central/taxis")
+        mockMvc.perform(post("/central/taxi")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(taxiJson))
                 .andExpect(status().isOk())

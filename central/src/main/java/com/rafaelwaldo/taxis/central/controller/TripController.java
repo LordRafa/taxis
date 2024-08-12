@@ -35,7 +35,7 @@ public class TripController {
         return tripService.getAssignedTripTaxi(tripUuid);
     }
 
-    @PostMapping("/request")
+    @PostMapping()
     public Trip publishTrip(@Valid @RequestBody Trip trip) {
         return tripService.publishTrip(trip);
     }

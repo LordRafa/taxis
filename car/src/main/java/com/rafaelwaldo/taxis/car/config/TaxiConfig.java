@@ -15,25 +15,19 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class TaxiConfig {
 
-    @Data
-    public static class Command {
-        private String exchange;
-        private String queue;
-    }
-
     private String plate;
     private Command command;
 
     @Bean
     public Declarables fanoutBindings() {
 
-        FanoutExchange cmdExchange = new FanoutExchange(command.getExchange());
+        FanoutExchange commandExchange = new FanoutExchange(command.getExchange());
         Queue fanoutQueue1 = new Queue(command.queue, false);
 
         return new Declarables(
                 fanoutQueue1,
-                cmdExchange,
-                BindingBuilder.bind(fanoutQueue1).to(cmdExchange));
+                commandExchange,
+                BindingBuilder.bind(fanoutQueue1).to(commandExchange));
     }
 
     @Bean
@@ -41,5 +35,11 @@ public class TaxiConfig {
         return TaxiPojo.builder()
                 .plate(plate)
                 .build();
+    }
+
+    @Data
+    public static class Command {
+        private String exchange;
+        private String queue;
     }
 }

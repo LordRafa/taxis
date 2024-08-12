@@ -31,7 +31,7 @@ public class TaxiCentralClientImpl implements TaxiCentralClient {
 
     @Override
     public List<Taxi> listTaxis() {
-        ResponseEntity<Taxi[]> response = restTemplate.getForEntity(taxiCentralHost + "/taxi", Taxi[].class);
+        ResponseEntity<Taxi[]> response = restTemplate.getForEntity(taxiCentralHost + "/central/taxi", Taxi[].class);
 
         if (response.getStatusCode().is2xxSuccessful()) {
             return Arrays.asList(Objects.requireNonNull(response.getBody()));
@@ -42,7 +42,7 @@ public class TaxiCentralClientImpl implements TaxiCentralClient {
 
     @Override
     public Trip publishTrip(Trip trip) {
-        ResponseEntity<Trip> response = restTemplate.postForEntity(taxiCentralHost + "/trip", trip, Trip.class);
+        ResponseEntity<Trip> response = restTemplate.postForEntity(taxiCentralHost + "/central/trip", trip, Trip.class);
 
         if (response.getStatusCode().is2xxSuccessful()) {
             return response.getBody();
@@ -54,7 +54,7 @@ public class TaxiCentralClientImpl implements TaxiCentralClient {
     @Override
     @Retryable(retryFor = TripNotFoundException.class, backoff = @Backoff(delay = 1000))
     public Taxi getAssignedTripTaxi(UUID tripUuid) {
-        ResponseEntity<Taxi> response = restTemplate.getForEntity(taxiCentralHost + "/trip/" + tripUuid + "/taxi", Taxi.class);
+        ResponseEntity<Taxi> response = restTemplate.getForEntity(taxiCentralHost + "/central/trip/" + tripUuid + "/taxi", Taxi.class);
 
         if (response.getStatusCode().is2xxSuccessful()) {
             return response.getBody();

@@ -10,7 +10,7 @@ import static com.rafaelwaldo.taxis.central.utils.TestConstants.TAXI_COMMAND_FAN
 
 @Getter
 @Component
-public class RabbitMQTestConsumer {
+public class TaxiCommandTestConsumer {
 
     private final CountDownLatch latch = new CountDownLatch(1);
     private String receivedMessage;

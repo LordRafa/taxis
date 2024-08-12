@@ -13,7 +13,7 @@ import com.rafaelwaldo.taxis.central.repository.TripRepository;
 import com.rafaelwaldo.taxis.central.repository.entity.TaxiEntity;
 import com.rafaelwaldo.taxis.central.repository.entity.TripEntity;
 import com.rafaelwaldo.taxis.central.utils.MockHelper;
-import com.rafaelwaldo.taxis.central.utils.RabbitMQTestConsumer;
+import com.rafaelwaldo.taxis.central.utils.TaxiCommandTestConsumer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,7 +50,7 @@ class TripControllerIntegrationTest {
     private TripRepository tripRepository;
 
     @Autowired
-    private RabbitMQTestConsumer rabbitMQTestConsumer;
+    private TaxiCommandTestConsumer taxiCommandTestConsumer;
 
     @Autowired
     private TaxiRepository taxiRepository;
@@ -68,15 +68,15 @@ class TripControllerIntegrationTest {
 
         Trip trip = MockHelper.getMockTrip().uuid(null).build();
 
-        mockMvc.perform(post("/central/trip/request")
+        mockMvc.perform(post("/central/trip")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(trip)))
                 .andExpect(status().isOk())
                 .andDo(result -> compareOriginalTrip(result, trip));
 
-        boolean messageReceived = rabbitMQTestConsumer.getLatch().await(10, TimeUnit.SECONDS);
+        boolean messageReceived = taxiCommandTestConsumer.getLatch().await(10, TimeUnit.SECONDS);
         assertThat(messageReceived).isTrue();
-        TaxiCommand taxiCommand = objectMapper.readValue(rabbitMQTestConsumer.getReceivedMessage(), TaxiCommand.class);
+        TaxiCommand taxiCommand = objectMapper.readValue(taxiCommandTestConsumer.getReceivedMessage(), TaxiCommand.class);
         assertThat(taxiCommand.taxiCommandName()).isEqualTo(PUBLISH_TRIP);
 
     }

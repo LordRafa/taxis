@@ -43,10 +43,10 @@ class TaxiHubControllerIntegrationTest {
     void testListTaxis() throws Exception {
         Taxi taxi = getMockTaxi().build();
 
-        when(restTemplate.getForEntity("http://localhost:8080/taxi", Taxi[].class))
+        when(restTemplate.getForEntity("http://localhost:8080/central/taxi", Taxi[].class))
                 .thenReturn(new ResponseEntity<>(new Taxi[]{taxi}, HttpStatus.OK));
 
-        mockMvc.perform(get("/hub/taxis"))
+        mockMvc.perform(get("/hub/taxi"))
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(new TaxiDTO[]{taxiMapper.toTaxiDTO(taxi)})));
     }
@@ -60,15 +60,15 @@ class TaxiHubControllerIntegrationTest {
 
         Mockito.reset(restTemplate);
 
-        when(restTemplate.postForEntity("http://localhost:8080/trip", trip, Trip.class))
+        when(restTemplate.postForEntity("http://localhost:8080/central/trip", trip, Trip.class))
                 .thenReturn(new ResponseEntity<>(tripWithUUid, HttpStatus.OK));
 
-        when(restTemplate.getForEntity("http://localhost:8080/trip/" + tripWithUUid.uuid() + "/taxi", Taxi.class))
+        when(restTemplate.getForEntity("http://localhost:8080/central/trip/" + tripWithUUid.uuid() + "/taxi", Taxi.class))
                 .thenReturn(new ResponseEntity<>(HttpStatus.NOT_FOUND))
                 .thenReturn(new ResponseEntity<>(HttpStatus.NOT_FOUND))
                 .thenReturn(new ResponseEntity<>(taxi, HttpStatus.OK));
 
-        mockMvc.perform(post("/hub/taxis/request")
+        mockMvc.perform(post("/hub/taxi/request")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestTaxiDTO)))
                 .andExpect(status().isOk())
@@ -79,7 +79,7 @@ class TaxiHubControllerIntegrationTest {
     void testRequestTaxiErrorInvalidLocation() throws Exception {
         RequestTaxiDTO requestTaxiDTO = getMockRequestTaxiDTO().location(null).build();
 
-        mockMvc.perform(post("/hub/taxis/request")
+        mockMvc.perform(post("/hub/taxi/request")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestTaxiDTO)))
                 .andExpect(status().isBadRequest())
@@ -94,13 +94,13 @@ class TaxiHubControllerIntegrationTest {
 
         Mockito.reset(restTemplate);
 
-        when(restTemplate.postForEntity("http://localhost:8080/trip", trip, Trip.class))
+        when(restTemplate.postForEntity("http://localhost:8080/central/trip", trip, Trip.class))
                 .thenReturn(new ResponseEntity<>(tripWithUUid, HttpStatus.OK));
 
-        when(restTemplate.getForEntity("http://localhost:8080/trip/" + tripWithUUid.uuid() + "/taxi", Taxi.class))
+        when(restTemplate.getForEntity("http://localhost:8080/central/trip/" + tripWithUUid.uuid() + "/taxi", Taxi.class))
                 .thenReturn(new ResponseEntity<>(HttpStatus.NOT_FOUND));
 
-        mockMvc.perform(post("/hub/taxis/request")
+        mockMvc.perform(post("/hub/taxi/request")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestTaxiDTO)))
                 .andExpect(status().isNotFound())
@@ -116,14 +116,14 @@ class TaxiHubControllerIntegrationTest {
 
         Mockito.reset(restTemplate);
 
-        when(restTemplate.postForEntity("http://localhost:8080/trip", trip, Trip.class))
+        when(restTemplate.postForEntity("http://localhost:8080/central/trip", trip, Trip.class))
                 .thenReturn(new ResponseEntity<>(tripWithUUid, HttpStatus.OK));
 
-        when(restTemplate.getForEntity("http://localhost:8080/trip/" + tripWithUUid.uuid() + "/taxi", Taxi.class))
+        when(restTemplate.getForEntity("http://localhost:8080/central/trip/" + tripWithUUid.uuid() + "/taxi", Taxi.class))
                 .thenReturn(new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR))
                 .thenReturn(new ResponseEntity<>(taxi, HttpStatus.OK));
 
-        mockMvc.perform(post("/hub/taxis/request")
+        mockMvc.perform(post("/hub/taxi/request")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestTaxiDTO)))
                 .andExpect(status().is5xxServerError())
