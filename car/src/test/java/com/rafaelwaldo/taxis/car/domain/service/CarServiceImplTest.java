@@ -61,6 +61,18 @@ class CarServiceImplTest {
     }
 
     @Test
+    void getTaxiInfo() {
+        Taxi expectedTaxi = getMockTaxi().build();
+
+        when(taxiMapper.toDomain(taxiPojo)).thenReturn(expectedTaxi);
+
+        Taxi result = carService.getTaxiInfo();
+
+        assertEquals(expectedTaxi, result);
+        verify(taxiMapper).toDomain(taxiPojo);
+    }
+
+    @Test
     void publishTaxiCar() {
         Location location = new Location("foo", "bar");
         Taxi taxi = getMockTaxi().location(location).build();

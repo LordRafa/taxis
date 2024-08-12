@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Hub Service</title>
+    <style>
+        #taxiList {
+            margin-top: 20px;
+        }
+
+        #requestForm {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+<h1>Hub Service</h1>
+<button id="listTaxisButton">List Taxis</button>
+<div id="taxiList"></div>
+
+<div id="requestForm">
+    <h2>Request a Taxi</h2>
+    <form id="taxiRequestForm">
+        <label for="pickupLatitude">Pickup Latitude:</label>
+        <input id="pickupLatitude" name="pickupLatitude" required type="text"><br><br>
+        <label for="pickupLongitude">Pickup Longitude:</label>
+        <input id="pickupLongitude" name="pickupLongitude" required type="text"><br><br>
+        <button type="submit">Request Taxi</button>
+    </form>
+</div>
+
+<script>
+    document.getElementById('listTaxisButton').addEventListener('click', listTaxis);
+    document.getElementById('taxiRequestForm').addEventListener('submit', requestTaxi);
+
+    function listTaxis() {
+        fetch('/hub/taxi')
+            .then(response => response.json())
+            .then(data => {
+                const taxiList = document.getElementById('taxiList');
+                taxiList.innerHTML = '<h2>Available Taxis</h2>';
+                data.forEach(taxi => {
+                    taxiList.innerHTML += `<p>Taxi Plate: ${taxi.plate}, Status: ${taxi.taxiStatus}, Location: ${taxi.location.latitude},${taxi.location.longitude}</p>`;
+                    });
+            })
+            .catch(error => console.error('Error:', error));
+    }
+
+    function requestTaxi(event) {
+        event.preventDefault();
+        const formData = new FormData(event.target);
+        const requestData = {
+            location: {
+                latitude: formData.get('pickupLatitude'),
+                longitude: formData.get('pickupLongitude')
+            }
+        };
+
+        fetch('/hub/taxi/request', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(requestData)
+        })
+            .then(response => response.json())
+            .then(data => {
+                alert(`Taxi requested successfully: ${data.plate}`);
+            })
+            .catch(error => alert(error));
+    }
+</script>
+</body>
+</html>

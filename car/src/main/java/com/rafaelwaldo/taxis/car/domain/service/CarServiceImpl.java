@@ -18,6 +18,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -44,7 +45,12 @@ public class CarServiceImpl implements CarService {
         return taxiMapper.toDomain(taxiPojo);
     }
 
-    @Scheduled(fixedRate = 1000)
+    @Override
+    public Taxi getTaxiInfo() {
+        return taxiMapper.toDomain(taxiPojo);
+    }
+
+    @Scheduled(fixedRate = 1, timeUnit = TimeUnit.SECONDS)
     public void publishTaxiCar() {
         try {
             taxiPojo.setLocation(serviceLocation.getCurrentLocation());

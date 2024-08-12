@@ -4,4 +4,6 @@ import com.rafaelwaldo.taxis.car.domain.Taxi;
 
 public interface CarService {
     Taxi completeCarTrip();
+
+    Taxi getTaxiInfo();
 }

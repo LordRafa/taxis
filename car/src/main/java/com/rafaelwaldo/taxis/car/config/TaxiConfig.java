@@ -1,5 +1,6 @@
 package com.rafaelwaldo.taxis.car.config;
 
+import com.rafaelwaldo.taxis.car.domain.TaxiStatus;
 import com.rafaelwaldo.taxis.car.domain.pojo.TaxiPojo;
 import lombok.Data;
 import org.springframework.amqp.core.BindingBuilder;
@@ -34,6 +35,7 @@ public class TaxiConfig {
     public TaxiPojo taxiPojo() {
         return TaxiPojo.builder()
                 .plate(plate)
+                .taxiStatus(TaxiStatus.AVAILABLE)
                 .build();
     }
 

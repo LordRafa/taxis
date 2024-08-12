@@ -25,6 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -66,12 +67,29 @@ class TaxiControllerIntegrationTest {
         when(restTemplate.exchange(requestEntity, Trip.class))
                 .thenReturn(new ResponseEntity<>(trip, HttpStatus.OK));
 
-        mockMvc.perform(put("/taxi/taxi/trip/complete"))
+        mockMvc.perform(put("/taxi/trip/complete"))
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(expectedTaxi)));
 
         assertThat(taxiPojo.getCurrentTrip()).isNull();
         assertThat(taxiPojo.getTaxiStatus()).isEqualTo(TaxiStatus.AVAILABLE);
+    }
+
+    @Test
+    void getTaxiInfo() throws Exception {
+        Taxi expectedTaxi = getMockTaxi().build();
+
+        taxiPojo.setUuid(expectedTaxi.uuid());
+        taxiPojo.setTaxiStatus(expectedTaxi.taxiStatus());
+        taxiPojo.setPlate(expectedTaxi.plate());
+        taxiPojo.setLocation(expectedTaxi.location());
+
+        mockMvc.perform(get("/taxi"))
+                .andExpect(status().isOk())
+                .andExpect(content().json(objectMapper.writeValueAsString(expectedTaxi)));
+
+        Taxi result = taxiMapper.toDomain(taxiPojo);
+        assertThat(result).isEqualTo(expectedTaxi);
     }
 
 }
