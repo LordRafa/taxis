@@ -1,34 +1,66 @@
-# taxis
+# Taxi Management System
 
-Autor: Rafael Waldo Delgado Doblas
+**Author:** Rafael Waldo Delgado Doblas
 
-This project is a distributed application that allows to manage a basic taxi company.
+## Overview
 
-It is divided in three microservices:
-* The Hub service which is the interface exposed to the customers. It allows to list taxis and create the trips.
-* The Car service which is the application that will onboard in the taxis. It allows to update the location of the taxis and reply/complete to the trips.
-* The Central service which the application with the access to the database and coordinated the other two applications.
+This project is a distributed application designed to manage a basic taxi company. It consists of three microservices, each serving a unique function within the system.
 
-Mostly of the communications are synchronous but the taxis will be posted in a rabbitMQ in a fanout exchange to notify the taxis that a new trip has been created, to allow multicast the same message to all the taxis.
+### Microservices
 
-To run this you need to have installed docker and docker-compose.
+1. **Hub Service**
+   - **Purpose:** Acts as the main interface for customers.
+   - **Functions:**
+     - List available taxis.
+     - Create and manage trips.
 
-To run the project you need to execute the following command:
+2. **Car Service**
+   - **Purpose:** Operates on individual taxis.
+   - **Functions:**
+     - Update taxi location in real-time.
+     - Respond to and complete trip requests.
+
+3. **Central Service**
+   - **Purpose:** Manages the system's database and coordinates the other two services.
+   - **Functions:**
+     - Access and maintain trip data.
+     - Oversee communication between Hub and Car services.
+
+### Communication
+
+- **Synchronous Communication:** Most interactions between services are synchronous.
+- **Asynchronous Notifications:** Taxis are notified of new trip requests via a RabbitMQ fanout exchange, allowing simultaneous multicast notifications to all taxis.
+
+## Prerequisites
+
+To run this project, ensure you have the following installed:
+
+- **Docker**
+- **Docker Compose**
+
+## Running the Project
+
+To launch the application, execute the following command in your terminal:
 
 ```bash
 sh run.sh
 ```
 
-Three containers will be created, one for each service.
+This will spin up four containers, each hosting one of the services.
 
-To make things easier frontends can be used to interact with the services:
-* The Hub frontend: http://localhost:42025
-* The Car 1 frontend: http://localhost:42026
-* The Car 2 frontend: http://localhost:42027
-* The Central frontend: http://localhost:42024/central/stats
+## Frontend Interfaces
 
-The Hub frontend allows to list the taxis and create trips.
-The Car frontend allows to update the location of the taxis and reply/complete to the trips.
-The Central frontend allows to see the statistics of the trips.
+To interact with the services, you can use the following frontends:
 
-Each taxi will require to have an instance of the Car service running.
+- **Hub Frontend:** [http://localhost:42025](http://localhost:42025)
+  - **Functions:** List taxis, create trips.
+- **Car 1 Frontend:** [http://localhost:42026](http://localhost:42026)
+  - **Functions:** Update taxi location, manage trips.
+- **Car 2 Frontend:** [http://localhost:42027](http://localhost:42027)
+  - **Functions:** Update taxi location, manage trips.
+- **Central Frontend:** [http://localhost:42024/central/stats](http://localhost:42024/central/stats)
+  - **Functions:** View trip statistics.
+
+## Notes
+
+- Each taxi requires an instance of the Car Service to be running.
