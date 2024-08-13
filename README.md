@@ -23,5 +23,12 @@ Three containers will be created, one for each service.
 
 To make things easier frontends can be used to interact with the services:
 * The Hub frontend: http://localhost:42025
-* The Car frontend: http://localhost:42026
+* The Car 1 frontend: http://localhost:42026
+* The Car 2 frontend: http://localhost:42027
 * The Central frontend: http://localhost:42024/central/stats
+
+The Hub frontend allows to list the taxis and create trips.
+The Car frontend allows to update the location of the taxis and reply/complete to the trips.
+The Central frontend allows to see the statistics of the trips.
+
+Each taxi will require to have an instance of the Car service running.

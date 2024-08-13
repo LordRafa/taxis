@@ -44,7 +44,7 @@ services:
     ports:
       - "42025:8080"
 
-  car:
+  car1:
     build:
       context: ./car
     depends_on:
@@ -59,6 +59,22 @@ services:
       TAXI_PLATE: 1234ABC
     ports:
       - "42026:8080"
+
+  car2:
+    build:
+      context: ./car
+    depends_on:
+      - rabbitmq
+      - central
+    environment:
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USERNAME: guest
+      RABBITMQ_PASSWORD: guest
+      TAXI_CENTRAL_HOST: http://central:8080
+      TAXI_PLATE: 5678DEF
+    ports:
+      - "42027:8080"
 
 version: '3.8'
 

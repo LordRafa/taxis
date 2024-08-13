@@ -8,10 +8,8 @@ import com.rafaelwaldo.taxis.central.mapper.TaxiMapper;
 import com.rafaelwaldo.taxis.central.mapper.TripMapper;
 import com.rafaelwaldo.taxis.central.repository.TripRepository;
 import com.rafaelwaldo.taxis.central.repository.entity.TripEntity;
-import jakarta.persistence.LockModeType;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
-import org.springframework.data.jpa.repository.Lock;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -44,7 +42,6 @@ public class TripServiceImpl implements TripService {
 
     @Override
     @Transactional
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
     public Trip updateTripTaxi(UUID tripUuid, Taxi taxi) {
         return tripRepository.findById(tripUuid)
                 .filter(tripEntity -> tripEntity.getTripStatus().equals(TripStatus.PENDING))
@@ -56,7 +53,6 @@ public class TripServiceImpl implements TripService {
 
     @Override
     @Transactional
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
     public Trip updateTripStatus(UUID tripUuid, TripStatus tripStatus) {
         return tripRepository.findById(tripUuid)
                 .map(te -> te.withTripStatus(tripStatus))
